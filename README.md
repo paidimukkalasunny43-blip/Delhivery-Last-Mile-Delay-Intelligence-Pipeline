@@ -1,52 +1,54 @@
-# Delhivery – Last Mile Delay Intelligence Pipeline
+# Delhivery Last-Mile Delay Intelligence Pipeline
 
-## Project Overview
+## 1. Project Overview
 
-The **Delhivery Last Mile Delay Intelligence Pipeline** is a Python-based data analytics and machine learning project designed to analyze shipment data, study delivery delays, and generate actionable insights.
+This project develops a machine learning pipeline to predict last-mile shipment delays and help logistics operations teams identify shipments and hubs that may require attention.
 
-The project includes data preprocessing, exploratory data analysis, regression, classification, model evaluation, and hub segmentation.
+The pipeline covers data cleaning, exploratory data analysis, regression, classification, hub segmentation, model packaging, and shipment-level operational recommendations.
 
-## Objectives
+## 2. Project Objectives
 
-- Analyze shipment data and identify delivery delay patterns.
-- Perform data cleaning and exploratory data analysis.
-- Build machine learning models for delay prediction.
-- Evaluate model performance using appropriate metrics.
-- Segment delivery hubs based on their operational characteristics.
-- Generate insights and recommendations for shipments.
+- Clean and prepare shipment data for analysis.
+- Identify factors associated with delivery delays.
+- Predict delivery time using regression models.
+- Classify shipments as delayed or not delayed.
+- Segment hubs based on their operational delay patterns.
+- Generate actionable recommendations for shipments at risk.
 
-## Technologies Used
+## 3. Technologies Used
 
 - Python
 - Pandas
 - NumPy
 - Scikit-learn
+- Joblib
 - Machine Learning
-- Data Visualization
+- Data Analysis
 
-## Project Structure
+## 4. Project Structure
 
 ```text
 Delhivery-Last-Mile-Delay-Intelligence-Pipeline/
 │
 ├── data/
+│   ├── raw_shipments.csv
 │   ├── hubs.csv
-│   ├── modelling_table.csv
 │   ├── new_shipments.csv
-│   └── raw_shipments.csv
+│   └── modelling_table.csv
 │
 ├── models/
-│   ├── delay_model.pkl
-│   ├── delay_threshold.csv
-│   ├── feature_order.csv
-│   └── impute_values.csv
+│   └── delay_model.pkl
 │
 ├── outputs/
-│   ├── hub_profile.csv
-│   ├── hub_segments.csv
 │   ├── part_a_checks.csv
+│   ├── part_a_delay_by_group.csv
+│   ├── part_a_correlations.csv
 │   ├── part_b_metrics.csv
-│   └── other analysis outputs
+│   ├── part_c_models.csv
+│   ├── part_c_final_test.csv
+│   ├── hub_segments.csv
+│   ├── segment_profile.csv
+│   └── new_shipment_actions.csv
 │
 ├── src/
 │   └── shipment_prep.py
@@ -58,72 +60,164 @@ Delhivery-Last-Mile-Delay-Intelligence-Pipeline/
 ├── part_d_segments.py
 ├── package_model.py
 ├── predict_delay.py
-└── requirements.txt
+├── requirements.txt
+└── README.md
 ```
 
-## Installation and Setup
+## 5. How to Run
 
-### 1. Clone the repository
+### Step 1: Clone the repository
 
 ```bash
 git clone https://github.com/paidimukkalasunny43-blip/Delhivery-Last-Mile-Delay-Intelligence-Pipeline.git
 ```
 
-### 2. Navigate to the project folder
+### Step 2: Open the project directory
 
 ```bash
 cd Delhivery-Last-Mile-Delay-Intelligence-Pipeline
 ```
 
-### 3. Install dependencies
+### Step 3: Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Project Modules
+### Step 4: Run the pipeline
 
-**Part A – Data Cleaning and EDA**
-- Data preprocessing
-- Data quality checks
-- Correlation analysis
-- Delay analysis
+Execute the scripts in the following order:
 
-**Part B – Regression**
-- Regression modelling
-- Model evaluation
-- Hyperparameter analysis
+```bash
+python generate_data.py
+python part_a_clean_eda.py
+python part_b_regression.py
+python part_c_classification.py
+python part_d_segments.py
+python package_model.py
+python predict_delay.py
+```
 
-**Part C – Classification**
-- Classification modelling
-- Feature selection
-- Threshold tuning
-- Model evaluation
+The scripts generate analysis outputs, trained model files, hub segments, and shipment-level recommendations.
 
-**Part D – Hub Segmentation**
-- Hub analysis
-- Hub profiling
-- Segmentation
-- Operational insights
+## 6. Data Findings
 
-## Model and Prediction
+The initial shipment dataset contained 1,224 rows.
 
-The trained model and supporting files are stored in the `models/` directory.
+After removing 24 duplicate records, 1,200 unique shipments remained.
 
-The `predict_delay.py` script is provided for shipment delay prediction.
+Important findings:
 
-## Results
+- Overall shipment delay rate: **23.17%**.
+- Express service delay rate: **48.97%**.
+- Standard service delay rate: **20.56%**.
+- Economy service delay rate: **8.57%**.
+- Hub Tier 3 delay rate: **44.00%**.
+- Shipments travelling more than 600 km had an **85.23%** delay rate.
 
-The analysis and model outputs are available in the `outputs/` directory.
+Distance, hub tier, number of stops, and hub capacity were important factors associated with shipment delays.
 
-These include model metrics, feature scores, hub profiles, segmentation results, and shipment action recommendations.
+## 7. Model Results – Regression
 
-## Author
+Multiple regression models were evaluated to predict delivery hours.
 
-**Sunny Paidimukkala**
+| Model | Validation RMSE |
+|---|---:|
+| Linear Regression | 4.8912 |
+| Decision Tree | 6.2796 |
+| Random Forest | 5.4680 |
+| Gradient Boosting | 4.9165 |
 
-GitHub: https://github.com/paidimukkalasunny43-blip
+Linear Regression was selected based on validation performance.
 
-## License
+**Held-out test results:**
 
-This project is available for educational and portfolio purposes. Add a formal license if you intend to grant specific reuse permissions.
+- MAE: 3.5671 hours
+- RMSE: 4.5235 hours
+- R² Score: 0.9493
+
+These results indicate that the selected model performed well on the held-out test dataset.
+
+## 8. Model Results – Classification
+
+Classification models were evaluated to identify delayed shipments.
+
+The final configuration used:
+
+- Feature selection: 7 features
+- Random Forest: 100 estimators
+- Classification threshold: 0.50
+
+**Held-out test results:**
+
+- Accuracy: 86.67%
+- Precision: 68.89%
+- Recall: 75.61%
+- F1 Score: 72.09%
+
+The model identifies shipments at risk of delay and can support proactive operational decisions.
+
+## 9. Hub Segmentation
+
+Hub-level operational profiles were analyzed using K-Means clustering.
+
+Three operational segments were identified:
+
+| Segment | Hubs | Delay Rate |
+|---|---:|---:|
+| Standard | 7 | 2.57% |
+| Watch | 8 | 15.50% |
+| Escalate | 9 | 46.00% |
+
+These segments help prioritize hubs based on their observed delay patterns.
+
+## 10. Operations Recommendation
+
+The analysis supports the following operational recommendations:
+
+- **Standard:** Continue normal operations and routine monitoring.
+- **Watch:** Monitor shipment delays, capacity, and delivery performance more frequently.
+- **Escalate:** Prioritize operational review, investigate capacity constraints, and consider additional resources.
+
+The shipment prediction pipeline also generates actions for shipments identified as high risk.
+
+In the evaluated output, 8 of 48 new shipments were flagged for attention:
+- 2 proactive customer calls.
+- 6 escalations to hub managers.
+
+## 11. Production Plan
+
+A possible production implementation would include:
+
+1. Integrating shipment and hub data from operational systems.
+2. Running the prediction pipeline on incoming shipments.
+3. Generating delay-risk scores and recommended actions.
+4. Providing a dashboard for operations teams.
+5. Monitoring prediction performance and model drift.
+6. Retraining models using updated shipment data.
+
+This is a proposed future deployment plan, not a claim that the pipeline is already connected to Delhivery's production systems.
+
+## 12. Limitations
+
+- Model performance is based on the available project dataset.
+- The dataset contains 1,200 unique shipments after duplicate removal.
+- Performance on new real-world operational data may differ.
+- Classification predictions can include false positives and false negatives.
+- External validation and continuous production monitoring are still required.
+- The proposed production plan requires integration with operational systems.
+
+## 13. Conclusion
+
+The Delhivery Last-Mile Delay Intelligence Pipeline demonstrates how data analysis and machine learning can support last-mile logistics operations.
+
+It combines delivery-time prediction, delay classification, hub segmentation, and shipment-level recommendations into a structured workflow.
+
+The project provides a foundation for identifying delay risks and supporting data-driven operational decisions.
+
+## 14. Author
+
+**Project:** Delhivery Last-Mile Delay Intelligence Pipeline
+
+**GitHub Repository:**  
+https://github.com/paidimukkalasunny43-blip/Delhivery-Last-Mile-Delay-Intelligence-Pipeline
